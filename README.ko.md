@@ -81,3 +81,4 @@ ReplayMod의 영상 내보내기는 **ffmpeg** 에 의존합니다. Windows에�
 - 이 패치 레이어는 **MIT** 로 배포됩니다([`LICENSE`](LICENSE) 참조).
 - **ReplayMod**(MIT, 원작자 **CrushedPixel**, **johni0702**) 기반입니다. 패치 jar에는 원본 `LICENSE.txt` 가 유지됩니다.
 - 서드파티 고지는 [`NOTICE.md`](NOTICE.md), 업스트림과의 정확한 관계(대상 jar의 SHA-256 포함)는 [`UPSTREAM.md`](UPSTREAM.md) 참조.
+- 아이디어 출처: 이 패치 레이어 방식은 [`replaymod-gtnh-compat`](https://github.com/Luoxueruoling/replaymod-gtnh-compat) 프로젝트의 탐구에서 영감을 받았습니다. 감사합니다.

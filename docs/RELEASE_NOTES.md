@@ -71,10 +71,14 @@ See [`BUILDING.md`](BUILDING.md).
 
 ## Credits
 
-**Luoxueruoling** (author, all in-game testing and field reports), an **AI coding agent**
+**The maintainer** (in-game testing and field reports), an **AI coding agent**
 (DeepSeek Harness / `deepseek-flash`, implementation and bytecode analysis), two external testers,
 and the toolchain: Java 8 `javac`, Mixin 0.8.7 / UniMixins, ASM 9.x, RetroFuturaGradle, `javap`.
 Upstream ReplayMod is **MIT** by CrushedPixel and johni0702.
+
+> The patch-layer approach was inspired by the
+> [`replaymod-gtnh-compat`](https://github.com/Luoxueruoling/replaymod-gtnh-compat) project. Thanks for
+> paving the way.
 
 ## License
 

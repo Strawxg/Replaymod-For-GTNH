@@ -92,3 +92,6 @@ See [`docs/BUILDING.md`](docs/BUILDING.md). Requires:
   original `LICENSE.txt`.
 - Third-party notices: [`NOTICE.md`](NOTICE.md); exact upstream relationship (including the target jar's
   SHA-256): [`UPSTREAM.md`](UPSTREAM.md).
+- Approach credit: the patch-layer approach was inspired by the
+  [`replaymod-gtnh-compat`](https://github.com/Luoxueruoling/replaymod-gtnh-compat) project; thanks for
+  paving the way.

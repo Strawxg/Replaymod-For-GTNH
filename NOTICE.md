@@ -48,16 +48,19 @@ repository's source tree.
 
 ## Who made this
 
-* **Luoxueruoling** — author and maintainer. Every in-game test, every field report that drove a
-  fix, and the decisions about what to fix at all came from this side of the project.
-* **An AI coding agent** (DeepSeek Harness, `deepseek-flash`) — implemented the patch layer, did the
-  bytecode archaeology (`javap` against both the MCP-named and the SRG-named Minecraft jars, and a
-  jar-by-jar diff of the 90+ archived builds), and wrote this documentation. Notably, several of its
-  first diagnoses were *wrong* and had to be corrected by measurement — `docs/IMPLEMENTATION_NOTES.md`
-  records those mistakes on purpose, because they are the useful part.
+* **The maintainer** — in-game testing, field reports, and the decisions about what to fix.
+* **An AI coding agent** (DeepSeek Harness, `deepseek-flash` / `deepseek-v4-pro`) — implemented the
+  patch layer, did the bytecode archaeology (`javap` against both the MCP-named and the SRG-named
+  Minecraft jars), and wrote this documentation.
 * **Two external testers** on a ~340-mod pack, who ran builds in a real GTNH world and reported what
-  actually broke; their findings drove every fix after the first release. They are credited as
-  "Tester A" and "Tester B" in `docs/COMPATIBILITY_LOG.md` because those documents are public.
+  actually broke.
+
+### Approach credit
+
+The **patch-layer approach** — inject Mixin/ASM into the official jar instead of rebuilding the dead
+1.7.10 build chain — was inspired by the exploration in the
+[`replaymod-gtnh-compat`](https://github.com/Luoxueruoling/replaymod-gtnh-compat) project.
+Thanks for paving the way.
 
 ### Toolchain
 

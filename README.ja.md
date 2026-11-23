@@ -81,3 +81,4 @@ ReplayMod の動画書き出しは **ffmpeg** に依存します。Windows で�
 - このパッチレイヤーは **MIT** で公開されています（[`LICENSE`](LICENSE) を参照）。
 - **ReplayMod**（MIT、原作者 **CrushedPixel**、**johni0702**）をベースにしています。パッチ jar には元の `LICENSE.txt` が保持されています。
 - サードパーティの通知は [`NOTICE.md`](NOTICE.md)、アップストリームとの正確な関係（対象 jar の SHA-256 を含む）は [`UPSTREAM.md`](UPSTREAM.md) を参照。
+- アイデアの出典：このパッチレイヤー方式は [`replaymod-gtnh-compat`](https://github.com/Luoxueruoling/replaymod-gtnh-compat) プロジェクトの試みに触発されました。感謝します。

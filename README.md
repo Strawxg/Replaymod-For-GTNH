@@ -83,3 +83,4 @@ ReplayMod 导出视频依赖 **ffmpeg**。ReplayMod 会按下面顺序查找（W
 - 本补丁层以 **MIT** 发布（见 [`LICENSE`](LICENSE)）。
 - 基于 **ReplayMod**（MIT，原作者 **CrushedPixel**、**johni0702**）；补丁 jar 内保留其 `LICENSE.txt`。
 - 第三方组件说明见 [`NOTICE.md`](NOTICE.md)；与上游的精确关系（含目标 jar 的 SHA-256）见 [`UPSTREAM.md`](UPSTREAM.md)。
+- 思路致谢：补丁层方案借鉴了 [`replaymod-gtnh-compat`](https://github.com/Luoxueruoling/replaymod-gtnh-compat) 项目的探索，特此感谢。
