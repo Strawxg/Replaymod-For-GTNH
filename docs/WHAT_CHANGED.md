@@ -1,4 +1,4 @@
-# 对原始 mod 的修改总账（release1.0）
+# 对原始 mod 的修改总账（release1.1）
 
 > 目标：让 **ReplayMod 1.7.10-2.5.2** 在 **GTNH 2.9.0** 上可用。
 > 本文只回答一件事：**我们到底改了原始 mod 的什么**。
@@ -12,7 +12,11 @@
 | **新增的条目** | **52** = **51 个 class**（`com/gtnh/replaycompat/**`）+ **1 个 mixin 配置**（`mixins.replaycompat.json`） |
 | **改写的上游文件** | **3 个**：`META-INF/MANIFEST.MF`、`mixins.recording.replaymod.json`、`assets/replaymod/lang/zh_CN.lang` |
 | 51 个新 class 的构成 | **29** 功能 mixin + **9** util（7 个类 + 2 个内部类）+ **12** ASM transformer + **1** coremod 入口 |
-| 当前版本 | **release1.0**：`Replaymod-2.5.2-GTNH-release1.0.jar`，`10881470` B，`SHA256 C2E7953B7E964AED48F61BFFA9C55BB495CE3B2256F2D5F501E74F12B6F8B208` |
+| 当前版本 | **release1.1**：`Replaymod-2.5.2-GTNH-release1.1.jar`，`10882998` B，`SHA256 E9AACAB9DF6859151A537CF7419C078314EB7B9419D8DD74F28412429F9EE1DB` |
+
+**1.0 → 1.1 只改了补丁层里的 2 个 class，没有新增/删除任何条目**：`NullWorldGuard`（新增 5 个方法）与
+`MixinNetHandlerPlayClientNullWorldGuard`（`guard$deferRespawn` 先判「目标维度未注册就跳过」）。
+条目数仍是 6153 unique / 6154 raw，51 个 class 也不变，只是这两个 class 的字节变了。
 
 **一句话**：**没有 fork 上游源码重新编译**。做法是——保留上游 jar 的全部内容，用脚本把一层
 `com.gtnh.replaycompat` 适配包**注入**进去，并把引导入口（manifest）、上游的一处 mixin 列表、
@@ -20,9 +24,9 @@
 
 ## 1. jar 结构层面的修改（最要紧的一处）
 
-上游与 release1.0 的 `META-INF/MANIFEST.MF` 对比（逐行，取自 jar）：
+上游与 release1.1 的 `META-INF/MANIFEST.MF` 对比（逐行，取自 jar）：
 
-| 键 | 上游（原始） | release1.0（我们） | 为什么 |
+| 键 | 上游（原始） | release1.1（我们） | 为什么 |
 |---|---|---|---|
 | `TweakClass` | `com.replaymod.core.tweaker.ReplayModTweaker` | **`org.spongepowered.asm.launch.MixinTweaker`** | GTNH 用 unimixins + Mixin 0.8.7；上游 tweaker 在 GTNH 上不可用 |
 | `FMLCorePlugin` | `com.replaymod.core.LoadingPlugin` | **`com.gtnh.replaycompat.ReplayModTransformers`** | 上游 coremod 的 transformer 在 GTNH + RFB 上会 `ClassCircularityError` |
@@ -40,6 +44,7 @@
 - **主菜单**：注入「回放中心」入口（Custom Main Menu 文字按钮）
 - **输入**：鼠标锁、按键桥、滚轮调速
 - **回放**：第一人称/手、加载期 `theWorld == null` 守卫
+- **回放（1.1）**：`S07` 目标维度未注册时跳过，不再崩（`NullWorldGuard.shouldSkipUnregisteredRespawn`）
 - **相机**：跨维度保持速度（`ReplayCameraSpeed`）
 - **录制**：玩家 spawn 条目、保存线程池守卫
 - **编辑**：marker / chunk 坏包容错

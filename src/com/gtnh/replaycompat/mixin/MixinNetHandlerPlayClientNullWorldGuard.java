@@ -129,8 +129,28 @@ public abstract class MixinNetHandlerPlayClientNullWorldGuard {
         }
     }
 
+    /**
+     * Respawn to a dimension this client has no {@code WorldProvider} for (release1.1).
+     *
+     * <p>Vanilla builds a {@code WorldClient} here; its constructor asks
+     * {@code DimensionManager.createProviderFor(dim)}, which throws
+     * {@code IllegalArgumentException: Could not get provider type for dimension N} for every
+     * dimension that is only registered at world-load or on demand - PersonalSpace's
+     * {@code PERSONAL_DIM_180}, Galacticraft bodies (registered when connecting, unregistered again
+     * when the connection drops - including the moment a replay is opened), Thaumcraft's outer
+     * lands, ... A replay feeds the recorded {@code S07} straight into this method, so none of that
+     * registration ever happens and the client dies while opening the replay.
+     *
+     * <p>Keeping the world the replay already has is the least invasive answer: the replay continues,
+     * one log line names the skipped dimension, and real server play is unaffected (a client that
+     * lacks the mod would otherwise crash there as well).
+     */
     @Inject(method = "func_147280_a", at = @At("HEAD"), cancellable = true, remap = false, require = 0)
     private void guard$deferRespawn(S07PacketRespawn packet, CallbackInfo ci) {
+        if (NullWorldGuard.shouldSkipUnregisteredRespawn(this, packet)) {
+            ci.cancel();
+            return;
+        }
         if (NullWorldGuard.worldMissing(this)) {
             NullWorldGuard.defer(packet);
             ci.cancel();

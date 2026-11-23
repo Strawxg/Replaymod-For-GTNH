@@ -5,7 +5,7 @@ an adaptation of a mod whose 1.7.10 branch was abandoned upstream in 2021 — se
 broken, and a few things that *look* broken are actually by design (of ReplayMod, of GTNH, or of
 1.7.10 itself). This page is the honest list.
 
-Last updated for the **release1.0** build.
+Last updated for the **release1.1** build.
 
 ---
 
@@ -46,6 +46,12 @@ Last updated for the **release1.0** build.
 
 ### Interface & rendering
 
+* **Other mods' screens and HUD elements overlap the replay timeline.** Opening Galaxy Map, a GT
+  machine GUI, NEI or similar puts their interface on top of the replay timeline and speed bar, so the
+  timeline cannot be seen or clicked until they are closed. GC's HUD warnings (e.g. "氧气装置配置无效")
+  are drawn over the timeline in the same way. This is draw order, not a crash: ReplayMod's overlay is
+  drawn in the HUD layer (`RenderGameOverlayEvent.Text`, via `AbstractGuiOverlay#renderOverlay`), while
+  those screens/HUDs draw after it. **Not fixed in 1.1** — planned for 1.2.
 * **Clicking far along the big timeline reloads the replay** (you see `Client disconnected from
   server`). Verified to be upstream's replay mechanism, not an input bug — jumping is a reload by design.
 * **Export does not support depth output**, and is somewhat slower than stock ReplayMod.

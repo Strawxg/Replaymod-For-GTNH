@@ -218,6 +218,156 @@ public final class NullWorldGuard {
         }
     }
 
+    // ---------------------------------------------------------------- unregistered dimensions
+
+    /**
+     * Reflection handles for the "the replayed {@code S07PacketRespawn} targets a dimension this client
+     * has never registered" guard (release1.1, the dimension 180 crash).
+     *
+     * <p>Every lookup is optional. When one cannot be resolved the guard reports "registered" and
+     * leaves vanilla behaviour untouched - a guard that cannot tell must never change behaviour.
+     */
+    private static volatile Method isDimensionRegistered;
+    private static volatile Method getStaticDimensionIDs;
+    private static boolean dimensionHooksResolved;
+    private static final java.util.Map<Class<?>, Method> RESPAWN_DIMENSION_GETTERS =
+            new ConcurrentHashMap<Class<?>, Method>();
+    private static final Set<Integer> LOGGED_SKIPPED_DIMENSIONS = ConcurrentHashMap.newKeySet();
+
+    private static synchronized void resolveDimensionHooks() {
+        if (dimensionHooksResolved) {
+            return;
+        }
+        dimensionHooksResolved = true;
+        try {
+            Class<?> manager = Class.forName("net.minecraftforge.common.DimensionManager");
+            isDimensionRegistered = manager.getMethod("isDimensionRegistered", int.class);
+            getStaticDimensionIDs = manager.getMethod("getStaticDimensionIDs");
+        } catch (Throwable t) {
+            isDimensionRegistered = null;
+            getStaticDimensionIDs = null;
+        }
+    }
+
+    /** Dimension id carried by an {@code S07PacketRespawn}; {@code Integer.MIN_VALUE} when unreadable. */
+    public static int respawnDimension(Object packet) {
+        if (packet == null) {
+            return Integer.MIN_VALUE;
+        }
+        try {
+            Method getter = RESPAWN_DIMENSION_GETTERS.get(packet.getClass());
+            if (getter == null) {
+                getter = packet.getClass().getMethod("func_149082_c");
+                getter.setAccessible(true);
+                RESPAWN_DIMENSION_GETTERS.put(packet.getClass(), getter);
+            }
+            Object value = getter.invoke(packet);
+            return value instanceof Integer ? ((Integer) value).intValue() : Integer.MIN_VALUE;
+        } catch (Throwable t) {
+            return Integer.MIN_VALUE;
+        }
+    }
+
+    /**
+     * {@code DimensionManager.isDimensionRegistered(dim)}.
+     *
+     * <p>1.7.10 Forge keeps the mapping in a {@code private static Hashtable dimensions} (dimension id
+     * to provider type); there is no {@code providerTypes} field in this version, and the public helper
+     * needs no access to private state. Reports {@code true} when the helper cannot be resolved.
+     */
+    public static boolean dimensionRegistered(int dimension) {
+        resolveDimensionHooks();
+        Method m = isDimensionRegistered;
+        if (m == null) {
+            return true;
+        }
+        try {
+            return Boolean.TRUE.equals(m.invoke(null, Integer.valueOf(dimension)));
+        } catch (Throwable t) {
+            return true;
+        }
+    }
+
+    /** Currently registered dimension ids, sorted, for the diagnostic log line. */
+    public static String registeredDimensionIds() {
+        resolveDimensionHooks();
+        Method m = getStaticDimensionIDs;
+        if (m == null) {
+            return "unknown";
+        }
+        try {
+            Object[] ids = (Object[]) m.invoke(null);
+            if (ids == null) {
+                return "unknown";
+            }
+            int[] sorted = new int[ids.length];
+            for (int i = 0; i < ids.length; i++) {
+                sorted[i] = ((Integer) ids[i]).intValue();
+            }
+            Arrays.sort(sorted);
+            StringBuilder out = new StringBuilder();
+            for (int i = 0; i < sorted.length; i++) {
+                if (i > 0) {
+                    out.append(',');
+                }
+                out.append(sorted[i]);
+            }
+            return out.toString();
+        } catch (Throwable t) {
+            return "unknown";
+        }
+    }
+
+    /** {@code Minecraft.thePlayer.dimension}, or {@code null} when it cannot be read. */
+    public static Integer playerDimension(Object handler) {
+        try {
+            Object minecraft = readField(handler, "gameController", "field_147299_f");
+            Object player = readField(minecraft, "thePlayer", "field_71439_g");
+            if (player == null) {
+                return null;
+            }
+            Object dimension = readField(player, "dimension", "field_71093_bK");
+            return dimension instanceof Integer ? (Integer) dimension : null;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    /**
+     * True when an {@code S07PacketRespawn} asks for a dimension that is not registered in this
+     * client's {@code DimensionManager}, i.e. when vanilla would throw
+     * {@code IllegalArgumentException: Could not get provider type for dimension N, does not exist}
+     * inside {@code WorldClient.<init>} (replay of a PersonalSpace dimension, a Galacticraft body,
+     * a Thaumcraft outer land, ... - any dimension registered at world-load/on-demand only).
+     *
+     * <p>The respawn is then cancelled at HEAD, so the replay keeps the world it already has instead
+     * of crashing; one log line per dimension names the registered set, which is all the diagnosis a
+     * user report needs. A respawn to the dimension the client is already in is left alone, because
+     * vanilla does not create a world in that case either.
+     */
+    public static boolean shouldSkipUnregisteredRespawn(Object handler, Object packet) {
+        try {
+            int dimension = respawnDimension(packet);
+            if (dimension == Integer.MIN_VALUE) {
+                return false;
+            }
+            if (dimensionRegistered(dimension)) {
+                return false;
+            }
+            Integer current = playerDimension(handler);
+            if (current != null && current.intValue() == dimension) {
+                return false;
+            }
+            if (LOGGED_SKIPPED_DIMENSIONS.add(Integer.valueOf(dimension))) {
+                System.out.println(TAG + "skipped respawn to unregistered dimension " + dimension
+                        + " (registered: " + registeredDimensionIds() + ")");
+            }
+            return true;
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     // ---------------------------------------------------------------- reflection
 
     /** Reads the first field that resolves, trying MCP and SRG spellings at every superclass. */

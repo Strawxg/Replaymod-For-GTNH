@@ -6,7 +6,7 @@
 > 녹화, 리플레이, 영상 내보내기.
 > ReplayMod(MIT, 원작자 **CrushedPixel** / **johni0702**) 기반입니다.
 
-**현재 버전: Release 1.0** · 대응 jar: `Replaymod-2.5.2-GTNH-release1.0.jar`
+**현재 버전: Release 1.1** · 대응 jar: `Replaymod-2.5.2-GTNH-release1.1.jar`
 
 > ⚠️ **면책 조항(필독)**: 이 패치 레이어의 구현은 **주로 AI 코딩 에이전트(DeepSeek V4.1 Pro / Flash)에 의해 이루어졌습니다**. 관리자는 전문 프로그래머가 아니며 코드를 완전히 이해하지 못합니다. 따라서 **알 수 없는 결함, 호환성 문제 또는 데이터 위험이 존재할 수 있습니다**. **자기 책임**으로 사용하십시오. 피드백은 환영하지만 수정을 보장하지는 않습니다.
 
@@ -23,7 +23,7 @@
 
 ## 설치
 
-1. `Replaymod-2.5.2-GTNH-release1.0.jar` 를 다운로드하여 GTNH 인스턴스의 `mods/` 에 넣습니다.
+1. `Replaymod-2.5.2-GTNH-release1.1.jar` 를 다운로드하여 GTNH 인스턴스의 `mods/` 에 넣습니다.
 2. `mods/` 에 다음 **런타임 의존성**이 있는지 확인합니다(모두 필수):
 
    | 의존성 | 최소 버전 | 설명 |
@@ -58,11 +58,13 @@ ReplayMod의 영상 내보내기는 **ffmpeg** 에 의존합니다. Windows에�
 > `-y -f rawvideo -pix_fmt bgra -s <W>x<H> -r <FPS> -i - -an -c:v libx264 -b:v <비트레이트> -pix_fmt yuv420p "<out.mp4>"`
 > 이 명령은 ffmpeg 7/8/9 에서 동작합니다.
 
-## 알려진 제한(Release 1.0 허용)
+## 알려진 제한(Release 1.1 허용)
 
-- **미등록 / 동적 차원으로의 이동을 리플레이하면 크래시**: 예를 들어 PersonalSpace의 개인 차원(차원 180).
-  녹화에 "해당 차원으로 전환" 패킷이 포함되어 있으면 클라이언트 `DimensionManager` 가 그 차원을 찾지 못해 Forge가 예외를 던집니다.
-  *회피*: **녹화했던 것과 같은 환경**에서 리플레이하거나, **차원을 바꾸지 않은** 녹화만 리플레이하십시오.
+- **미등록 차원으로의 이동은 건너뜀(1.1에서 크래시 수정)**: 예를 들어 PersonalSpace의 개인 차원(차원 180).
+  이전 버전은 `IllegalArgumentException: Could not get provider type ...` 로 죽었지만, 이제는 **현재 월드를 유지**하고 로그에 한 줄
+  `[replaycompat] skipped respawn to unregistered dimension N` 만 남깁니다. 대신 해당 구간의 차원 전환은 실제로 일어나지 않습니다(이전 차원에서 계속 재생).
+  판정은 `DimensionManager.isDimensionRegistered` 하나뿐이며 차원 이름은 전혀 고정하지 않습니다. Galacticraft 등 정상 등록된 차원의 동작은 그대로입니다.
+- **다른 모드의 화면이 리플레이 타임라인을 가림**: 갤럭시 맵, GT 기계 GUI, NEI 등을 열면 그것들이 타임라인 위에 그려져 타임라인을 볼 수도 클릭할 수도 없습니다. GC의 HUD 경고(예: "산소 장치 구성 무효")도 마찬가지입니다. 이는 그리기 순서 문제이며 **1.1에서는 미수정**입니다.
 - **월드 로딩이 끝난 후 녹화를 시작하면 지형 / 플레이어 항목이 빠질 수 있음**: ReplayMod는 청크/플레이어가 처음 도착할 때만 기록합니다.
   *권장*: ReplayMod의 **AUTO_START_RECORDING(자동 녹화 시작)** 을 켜서 월드에 들어가자마자 녹화하십시오.
 - **리플레이 중 "플레이어가 사라짐"은 보통 카메라 문제**(1인칭 또는 관전 중인 플레이어에 카메라가 붙어 있음)이며 엔티티 손실이 아닙니다. 자유 카메라로 확인하십시오.

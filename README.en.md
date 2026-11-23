@@ -6,7 +6,7 @@
 > recording, replay, and video export.
 > Based on ReplayMod (MIT, by **CrushedPixel** / **johni0702**).
 
-**Current version: Release 1.0** · jar: `Replaymod-2.5.2-GTNH-release1.0.jar`
+**Current version: Release 1.1** · jar: `Replaymod-2.5.2-GTNH-release1.1.jar`
 
 > ⚠️ **Disclaimer (please read)**: this patch layer was implemented **mainly by an AI coding agent (DeepSeek V4.1 Pro / Flash)**. The maintainer is not a professional programmer and does not fully understand the code, so **unknown defects, compatibility issues or data risks may exist**. Use at your own risk; feedback is welcome, but fixes are not guaranteed.
 
@@ -24,7 +24,7 @@ needs (UniMixins / GTNHLib / LWJGL3ify).
 
 ## Install
 
-1. Download `Replaymod-2.5.2-GTNH-release1.0.jar` and put it into the GTNH instance's `mods/`.
+1. Download `Replaymod-2.5.2-GTNH-release1.1.jar` and put it into the GTNH instance's `mods/`.
 2. Make sure the following **runtime dependencies** are present (all required):
 
    | Dependency | Minimum | Notes |
@@ -61,13 +61,18 @@ This patch was tested with **ffmpeg 9.1 full_build**.
 > `-y -f rawvideo -pix_fmt bgra -s <W>x<H> -r <FPS> -i - -an -c:v libx264 -b:v <bitrate> -pix_fmt yuv420p "<out.mp4>"`
 > It works on ffmpeg 7/8/9.
 
-## Known limitations (accepted for Release 1.0)
+## Known limitations (accepted for Release 1.1)
 
-- **Replaying a dimension change to an unregistered / dynamic dimension crashes** — e.g. PersonalSpace's
-  personal dimension (dimension 180). If the recording contains a respawn to such a dimension, the
-  client's `DimensionManager` cannot find it and Forge throws.
-  *Workaround*: replay in the **same environment** it was recorded in, or only replay recordings that
-  **never changed dimension**.
+- **A respawn to a dimension the client has not registered is now skipped (crash fixed in 1.1)** — e.g.
+  PersonalSpace's personal dimension (dimension 180). Older builds threw
+  `IllegalArgumentException: Could not get provider type ...`; the replay now **keeps its current world**
+  and writes one log line, `[replaycompat] skipped respawn to unregistered dimension N`.
+  The trade-off: that dimension change is not shown (the replay stays in the previous dimension).
+  The test is `DimensionManager.isDimensionRegistered`, with no dimension name hardcoded, so normally
+  registered dimensions (Galacticraft and everything else present at replay time) behave exactly as before.
+- **Other mods' screens overlap the replay timeline** — Galaxy Map, GT machine GUIs, NEI and GC HUD
+  warnings (e.g. the oxygen warning) are drawn on top of the timeline and speed bar, so the timeline
+  cannot be seen or clicked while they are open. This is draw order; **not fixed in 1.1**.
 - **A recording started after the world finished loading may lack terrain / the player entry** —
   ReplayMod only records chunks/players when they first arrive.
   *Suggestion*: enable ReplayMod's **AUTO_START_RECORDING** so recording starts as soon as you enter.
