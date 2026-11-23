@@ -1,10 +1,12 @@
 # ReplayMod 1.7.10 · GT New Horizons 兼容补丁
 
-> 让 **ReplayMod 1.7.10（2.5.2）** 在 **GTNH 2.9.0（Java 17–26 / lwjgl3ify）** 上正常工作：
+**简体中文** | [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
+
+> 让 **ReplayMod 1.7.10（2.5.2）** 在 **GTNH 2.9.0 Stable正式版（Java 17–26 / lwjgl3ify）** 上正常工作：
 > 录制、回放、导出视频。
 > 基于 ReplayMod（MIT，原作者 **CrushedPixel** / **johni0702**）。
 
-**版本：Release 1.0** · 对应 jar：`Replaymod-2.5.2-GTNH-release1.0.jar`
+**当前版本：Release 1.0** · 对应 jar：`Replaymod-2.5.2-GTNH-release1.0.jar`
 
 > ⚠️ **免责声明（务必阅读）**：本补丁层的实现**主要由 AI 编码代理（DeepSeek V4.1 Pro / Flash）完成**；维护者本人不是专业程序员，未完全掌握相关计算机代码知识。因此本项目**可能存在未知缺陷、兼容性问题或数据风险**。请**自行评估风险**后使用；欢迎反馈问题，但**不保证及时修复**。
 
