@@ -39,10 +39,10 @@ compiling coremod + asm/ (4 file(s), one javac pass)
 compiling 29 mixin(s) listed in overlay/mixins.replaycompat.json
   ok   MixinGuiCustomReplayEntry
   ...
-OK - 51 class(es): 29 mixin + 9 util + 13 coremod/asm
+OK - 52 class(es): 30 mixin + 9 util + 13 coremod/asm
 ```
 
-**51 classes** is the number to expect: 29 mixins + 9 utility classes (7 + 2 inner) +
+**52 classes** is the number to expect: 30 mixins + 9 utility classes (7 + 2 inner) +
 12 ASM transformer classes + 1 coremod entry point.
 
 ## 3. Apply
@@ -54,7 +54,7 @@ OK - 51 class(es): 29 mixin + 9 util + 13 coremod/asm
     -OutJar   ".\dist\replaymod-1.7.10-2.5.2-gtnh.jar"
 ```
 
-It copies the official jar, overwrites the four files in `overlay/`, injects all 51 classes,
+It copies the official jar, overwrites the four files in `overlay/`, injects all 52 classes,
 then **verifies** and prints:
 
 ```
@@ -64,7 +64,7 @@ changed    : 3 file(s) replaced by overlay/
 verified   : every compiled class is in the jar
 ```
 
-A correct build is **6153 entries** (upstream has 6101) and about **10882998 bytes** (zip container bytes can vary).
+A correct build is **6154 entries** (upstream has 6101) and about **10884633 bytes** (zip container bytes can vary).
 
 ## Doing it without PowerShell (Linux / macOS)
 
@@ -116,10 +116,10 @@ $patched  = Ent '.\dist\replaymod-1.7.10-2.5.2-gtnh.jar'
 
 Rebuilding from the official upstream jar reproduces the released jar **exactly**:
 
-* same **6153 entries** (upstream has 6101) and about the same file size (**~10882998 bytes**);
+* same **6154 entries** (upstream has 6101) and about the same file size (**~10884633 bytes**);
 
-> **Entry-count note:** 6153 is the number of *unique* entry names. The raw ZipArchive.Entries.Count` is **6154** here (and 6102 for the upstream jar), because the upstream jar itself ships a **duplicated ssets/ directory entry**. Both numbers are +52 over upstream - just compare like with like.
-* all **51** `com/gtnh/replaycompat/**` classes are **byte-for-byte identical** to the released build
+> **Entry-count note:** 6154 is the number of *unique* entry names. The raw ZipArchive.Entries.Count` is **6155** here (and 6102 for the upstream jar), because the upstream jar itself ships a **duplicated ssets/ directory entry**. Both numbers are +53 over upstream - just compare like with like.
+* all **52** `com/gtnh/replaycompat/**` classes are **byte-for-byte identical** to the released build
   (verified by SHA-256 per class).
 
 The zip container's own SHA-256 may differ between builds, because zip writers make different

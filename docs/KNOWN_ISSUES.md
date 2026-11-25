@@ -5,7 +5,7 @@ an adaptation of a mod whose 1.7.10 branch was abandoned upstream in 2021 — se
 broken, and a few things that *look* broken are actually by design (of ReplayMod, of GTNH, or of
 1.7.10 itself). This page is the honest list.
 
-Last updated for the **release1.1** build.
+Last updated for the **release1.2** build.
 
 ---
 
@@ -14,7 +14,7 @@ Last updated for the **release1.1** build.
 | Thing | Status |
 |---|---|
 | **Disconnect during the network handshake** (multiplayer) | A guard exists (`MixinOpenGuiHandlerConnectingGuard`) that drops a "open this GUI" packet arriving before the client world exists. The underlying cause is a **third-party mod's null-check bug**, not ReplayMod and not this patch. ⚠️ The guard has **never actually been observed firing** — the timing window is narrow. It is defensive, not proven. |
-| Other 1.7.10 packs | Developed and tested against **GT New Horizons 2.9.0-beta-3** only (lwjgl3ify + Angelica + a ~340 mod pack). Other packs may need adjustments. |
+| Other 1.7.10 packs | Developed and tested against **GT New Horizons 2.9.0 / 2.9.1 / 2.9.2** only (lwjgl3ify + Angelica + a ~340 mod pack). Other packs may need adjustments. |
 | Video export edge cases | Export was fixed for the common path; unusual resolutions/encoders are untested. |
 
 ## 2. Known broken or imperfect
@@ -57,7 +57,8 @@ Last updated for the **release1.1** build.
 * **Export does not support depth output**, and is somewhat slower than stock ReplayMod.
 * **The vanilla health bar is still drawn in replays** — GTNH never sends `HEALTH` events.
 * **JourneyMap's minimap and InGameInfoXML panels keep drawing** during replays; those mods draw them
-  themselves.
+  themselves. The old *NPE flood* (`Couldn't get service name` — one stack trace per dimension change)
+  is **fixed in 1.2**: JourneyMap is handed a stable world name while a replay is open.
 * Close to a character in a replay, the near field can look **dark** until the camera moves away
   (upstream renderer behaviour).
 

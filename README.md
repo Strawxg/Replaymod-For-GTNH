@@ -2,11 +2,11 @@
 
 **简体中文** | [English](README.en.md) | [日本語](README.ja.md) | [한국어](README.ko.md)
 
-> 让 **ReplayMod 1.7.10（2.5.2）** 在 **GTNH 2.9.0 Stable正式版（Java 17–26 / lwjgl3ify）** 上正常工作：
+> 让 **ReplayMod 1.7.10（2.5.2）** 在 **GTNH 2.9.0 – 2.9.2（Java 17–26 / lwjgl3ify）** 上正常工作：
 > 录制、回放、导出视频。
 > 基于 ReplayMod（MIT，原作者 **CrushedPixel** / **johni0702**）。
 
-**当前版本：Release 1.1** · 对应 jar：`Replaymod-2.5.2-GTNH-release1.1.jar`
+**当前版本：Release 1.2** · 对应 jar：`Replaymod-2.5.2-GTNH-release1.2.jar`
 
 > ⚠️ **免责声明（务必阅读）**：本补丁层的实现**主要由 AI 编码代理（DeepSeek V4.1 Pro / Flash）完成**；维护者本人不是专业程序员，未完全掌握相关计算机代码知识。因此本项目**可能存在未知缺陷、兼容性问题或数据风险**。请**自行评估风险**后使用；欢迎反馈问题，但**不保证及时修复**。
 
@@ -23,7 +23,7 @@
 
 ## 安装
 
-1. 下载 `Replaymod-2.5.2-GTNH-release1.1.jar`，放入 GTNH 实例的 `mods/`。
+1. 下载 `Replaymod-2.5.2-GTNH-release1.2.jar`，放入 GTNH 实例的 `mods/`。
 2. 确保 `mods/` 里有以下**运行时依赖**（缺一不可）：
 
    | 依赖 | 最低版本 | 说明 |
@@ -59,14 +59,18 @@ ReplayMod 导出视频依赖 **ffmpeg**。ReplayMod 会按下面顺序查找（W
 > `-y -f rawvideo -pix_fmt bgra -s <W>x<H> -r <FPS> -i - -an -c:v libx264 -b:v <码率> -pix_fmt yuv420p "<out.mp4>"`
 > 该命令在 ffmpeg 7/8/9 上均可用。
 
-## 已知限制（Release 1.1 接受）
+## 已知限制（Release 1.2 接受）
 
+- **回放期间的 JourneyMap NPE 刷屏已在 1.2 修复**：以前每次维度切换都会打一组
+  `Couldn't get service name: java.lang.NullPointerException ... getRealmsServerName()`，现在不再出现
+  （回放期间 JourneyMap 拿到的是一个固定的世界名；非回放状态行为不变）。
 - **回放遇到「未注册维度」会被跳过（1.1 已修复崩溃）**：例如 PersonalSpace 的个人维度（维度 180）。
   旧版本会直接抛 `IllegalArgumentException: Could not get provider type ...`；现在会**保留当前世界**并写一行日志
   `[replaycompat] skipped respawn to unregistered dimension N`。代价是那一段维度切换不会真的切过去（画面停在原维度）。
   判断依据是 `DimensionManager.isDimensionRegistered`，不写死任何维度名；GC 等正常注册的维度行为完全不变。
-- **其它 mod 的界面会盖住回放时间轴**：打开星系图 / GT 机器界面 / NEI 等时，它们绘制在时间轴之上，
-  导致看不到、点不到时间轴；GC 的 HUD 警告（如「氧气装置配置无效」）同理。这是绘制层级问题，**1.1 未修复**。
+- **其它 mod 的界面会盖住回放时间轴**：打开星系图 / GT 机器界面 / NEI / AE2·GT 输入输出总线等时，它们绘制在时间轴之上，
+  导致看不到、点不到时间轴；GC 的 HUD 警告（如「氧气装置配置无效」）同理。这是绘制层级问题，**1.2 未修复**，
+  已转入 **Alpha 分支**（Alpha → beta → Release）专门处理。
 - **中途开始录制的录像可能缺地形 / 缺玩家条目**：ReplayMod 只在区块/玩家首次到达时记录。
   *建议*：开启 ReplayMod 的 **自动开始录制（AUTO_START_RECORDING）**，从进世界就开始录。
 - **回放里「人消失」通常是相机视角问题**（相机贴在第一人称/旁观者身上），不是实体丢失；用自由相机查看。

@@ -2,11 +2,11 @@
 
 [简体中文](README.md) | **English** | [日本語](README.ja.md) | [한국어](README.ko.md)
 
-> Makes **ReplayMod 1.7.10 (2.5.2)** actually work on **GT New Horizons 2.9.0 Stable (Java 17–26 / lwjgl3ify)**:
+> Makes **ReplayMod 1.7.10 (2.5.2)** actually work on **GT New Horizons 2.9.0 – 2.9.2 (Java 17–26 / lwjgl3ify)**:
 > recording, replay, and video export.
 > Based on ReplayMod (MIT, by **CrushedPixel** / **johni0702**).
 
-**Current version: Release 1.1** · jar: `Replaymod-2.5.2-GTNH-release1.1.jar`
+**Current version: Release 1.2** · jar: `Replaymod-2.5.2-GTNH-release1.2.jar`
 
 > ⚠️ **Disclaimer (please read)**: this patch layer was implemented **mainly by an AI coding agent (DeepSeek V4.1 Pro / Flash)**. The maintainer is not a professional programmer and does not fully understand the code, so **unknown defects, compatibility issues or data risks may exist**. Use at your own risk; feedback is welcome, but fixes are not guaranteed.
 
@@ -24,7 +24,7 @@ needs (UniMixins / GTNHLib / LWJGL3ify).
 
 ## Install
 
-1. Download `Replaymod-2.5.2-GTNH-release1.1.jar` and put it into the GTNH instance's `mods/`.
+1. Download `Replaymod-2.5.2-GTNH-release1.2.jar` and put it into the GTNH instance's `mods/`.
 2. Make sure the following **runtime dependencies** are present (all required):
 
    | Dependency | Minimum | Notes |
@@ -61,8 +61,12 @@ This patch was tested with **ffmpeg 9.1 full_build**.
 > `-y -f rawvideo -pix_fmt bgra -s <W>x<H> -r <FPS> -i - -an -c:v libx264 -b:v <bitrate> -pix_fmt yuv420p "<out.mp4>"`
 > It works on ffmpeg 7/8/9.
 
-## Known limitations (accepted for Release 1.1)
+## Known limitations (accepted for Release 1.2)
 
+- **JourneyMap's replay-time NPE flood is fixed in 1.2** — previously every dimension change logged a
+  full `Couldn't get service name: java.lang.NullPointerException ... getRealmsServerName()` stack
+  trace; that no longer happens (JourneyMap is given a stable world name while a replay is open;
+  outside a replay nothing changes).
 - **A respawn to a dimension the client has not registered is now skipped (crash fixed in 1.1)** — e.g.
   PersonalSpace's personal dimension (dimension 180). Older builds threw
   `IllegalArgumentException: Could not get provider type ...`; the replay now **keeps its current world**
@@ -70,9 +74,10 @@ This patch was tested with **ffmpeg 9.1 full_build**.
   The trade-off: that dimension change is not shown (the replay stays in the previous dimension).
   The test is `DimensionManager.isDimensionRegistered`, with no dimension name hardcoded, so normally
   registered dimensions (Galacticraft and everything else present at replay time) behave exactly as before.
-- **Other mods' screens overlap the replay timeline** — Galaxy Map, GT machine GUIs, NEI and GC HUD
-  warnings (e.g. the oxygen warning) are drawn on top of the timeline and speed bar, so the timeline
-  cannot be seen or clicked while they are open. This is draw order; **not fixed in 1.1**.
+- **Other mods' screens overlap the replay timeline** — Galaxy Map, GT machine GUIs, NEI and the
+  AE2 / GT input-output bus are drawn on top of the timeline and speed bar, so the timeline
+  cannot be seen or clicked while they are open. This is draw order; **not fixed in 1.2** — it moved to
+  the **Alpha branch** (Alpha → beta → release).
 - **A recording started after the world finished loading may lack terrain / the player entry** —
   ReplayMod only records chunks/players when they first arrive.
   *Suggestion*: enable ReplayMod's **AUTO_START_RECORDING** so recording starts as soon as you enter.

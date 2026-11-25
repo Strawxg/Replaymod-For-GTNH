@@ -2,11 +2,11 @@
 
 [简体中文](README.md) | [English](README.en.md) | **日本語** | [한국어](README.ko.md)
 
-> **ReplayMod 1.7.10（2.5.2）** を **GTNH 2.9.0 Stable 正式版（Java 17–26 / lwjgl3ify）** で正常動作させます：
+> **ReplayMod 1.7.10（2.5.2）** を **GTNH 2.9.0 – 2.9.2（Java 17–26 / lwjgl3ify）** で正常動作させます：
 > 録画、リプレイ、動画の書き出し。
 > ReplayMod（MIT、原作者 **CrushedPixel** / **johni0702**）をベースにしています。
 
-**現在のバージョン：Release 1.1** · 対応 jar：`Replaymod-2.5.2-GTNH-release1.1.jar`
+**現在のバージョン：Release 1.2** · 対応 jar：`Replaymod-2.5.2-GTNH-release1.2.jar`
 
 > ⚠️ **免責事項（必読）**：このパッチレイヤーの実装は**主に AI コーディングエージェント（DeepSeek V4.1 Pro / Flash）によって行われました**。メンテナーはプロのプログラマーではなく、コードを完全に理解しているわけではありません。そのため、**未知の不具合・互換性問題・データリスクが存在する可能性があります**。**自己責任**でご利用ください。フィードバックは歓迎しますが、修正を保証するものではありません。
 
@@ -23,7 +23,7 @@
 
 ## インストール
 
-1. `Replaymod-2.5.2-GTNH-release1.1.jar` をダウンロードし、GTNH インスタンスの `mods/` に入れます。
+1. `Replaymod-2.5.2-GTNH-release1.2.jar` をダウンロードし、GTNH インスタンスの `mods/` に入れます。
 2. `mods/` に以下の**ランタイム依存**が入っていることを確認します（すべて必須）：
 
    | 依存 | 最低バージョン | 説明 |
@@ -58,13 +58,17 @@ ReplayMod の動画書き出しは **ffmpeg** に依存します。Windows で�
 > `-y -f rawvideo -pix_fmt bgra -s <W>x<H> -r <FPS> -i - -an -c:v libx264 -b:v <ビットレート> -pix_fmt yuv420p "<out.mp4>"`
 > このコマンドは ffmpeg 7/8/9 で動作します。
 
-## 既知の制限（Release 1.1 で許容）
+## 既知の制限（Release 1.2 で許容）
+
+- **リプレイ中の JourneyMap の NPE 連続出力は 1.2 で修正済み**：以前はディメンションを切り替えるたびに
+  `Couldn't get service name: java.lang.NullPointerException ... getRealmsServerName()` のスタックトレースが記録されていましたが、現在は出ません
+  （リプレイ中は JourneyMap に固定のワールド名を渡します。リプレイ以外の挙動は変わりません）。
 
 - **未登録ディメンションへの移動はスキップされる（1.1 でクラッシュ修正）**：例として PersonalSpace の個人ディメンション（ディメンション 180）。
   以前は `IllegalArgumentException: Could not get provider type ...` で落ちていましたが、現在は**現在のワールドを保持**し、ログに 1 行
   `[replaycompat] skipped respawn to unregistered dimension N` を出すだけになります。代償として、その区間のディメンション切り替えは行われません（前のディメンションのまま再生されます）。
   判定は `DimensionManager.isDimensionRegistered` のみで、ディメンション名は一切固定していません。Galacticraft など通常登録されるディメンションの挙動は変わりません。
-- **他の MOD の画面がリプレイのタイムラインに重なる**：ギャラクシーマップ、GT の機械 GUI、NEI などを開くと、それらがタイムラインの上に描画され、タイムラインが見えない・操作できない。GC の HUD 警告（「酸素装置の設定が無効」など）も同様。これは描画順の問題で、**1.1 では未修正**です。
+- **他の MOD の画面がリプレイのタイムラインに重なる**：ギャラクシーマップ、GT の機械 GUI、NEI、AE2 / GT の入出力バスなどを開くと、それらがタイムラインの上に描画され、タイムラインが見えない・操作できない。GC の HUD 警告（「酸素装置の設定が無効」など）も同様。これは描画順の問題で、**1.2 では未修正**です（**Alpha ブランチ**（Alpha → beta → Release）へ移動）。
 - **ワールド読み込み完了後に録画を開始すると、地形 / プレイヤーエントリが欠けることがある**：ReplayMod はチャンク/プレイヤーが最初に到着したときにしか記録しません。
   *推奨*：ReplayMod の **AUTO_START_RECORDING（自動録画開始）** を有効にし、ワールドに入った時点から録画する。
 - **リプレイ中の「プレイヤーが消える」は通常カメラの問題**（一人称または観戦中のプレイヤーにカメラが付いている）であり、エンティティの消失ではありません。フリーカメラで確認してください。

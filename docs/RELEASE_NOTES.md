@@ -1,4 +1,66 @@
-# Release notes — release1.1
+# Release notes — release1.2
+
+**Attach to this release:** `Replaymod-2.5.2-GTNH-release1.2.jar`
+(`10884633` bytes · `SHA256 81523FFD75334E2295CC67AC233EE06153D07BF56807BC9B2121730C2F1EBB41`)
+
+> ⚠️ **Disclaimer**: the patch layer was implemented **mainly by an AI coding agent (DeepSeek Harness / flash)**. The maintainer is not a professional programmer and does not fully understand the code, so **unknown defects may exist** — use at your own risk.
+
+## What changed in 1.2
+
+* **JourneyMap's replay-time NPE flood is gone.** While a replay was open, JourneyMap asked the game
+  for a "Realms server name", got `null` (1.7.10 has no Realms), and then logged a full stack trace
+  every time it resolved its map directory — once per dimension change. Measured on GTNH 2.9.1:
+  **217 lines in a 77-second replay** (`554` in one 10-minute session). 1.2 hands JourneyMap a stable
+  world name while a replay is open (`MixinJourneymapWorldName`, hooked at
+  `journeymap.client.data.WorldData#getWorldName`), so the null path is never entered. Outside a
+  replay JourneyMap behaves exactly as before; the patch never touches the replay's world data,
+  dimension logic, input handling or draw order.
+* The 1.1 "skip an unregistered-dimension respawn" guard is unchanged.
+
+## Tested with
+
+* **GT New Horizons 2.9.2** (Java 26, Qomicex launcher): recorded Overworld → personal dimension 180 →
+  Twilight Forest → Overworld, replayed at 2×; 30 mixins applied, no crash, `Couldn't get service name`
+  went from 217 (2.9.1) to **0**.
+* GTNH 2.9.0 / 2.9.1: the same dependency check passes (AE2 `rv3-beta-1104`, Et Futurum `2.6.66`,
+  CustomMainMenu `1.14.1`, UniMixins `0.3.1` — the target class bytes are identical on all three).
+
+## Known limitations (accepted for 1.2)
+
+Full list in [`KNOWN_ISSUES.md`](KNOWN_ISSUES.md). Highlights:
+
+* **Other mods' interfaces still overlap the replay timeline.** Galaxy Map, GT machine screens, NEI and
+  the AE2 / GT input-output bus are drawn on top of the timeline and speed bar. Draw-order issue,
+  **not fixed in 1.2** — it is the first target of the new **Alpha branch** (Alpha → beta → release),
+  and will not reach a release before it is verified there.
+* **A recording started after the world finished loading contains no terrain / no player entry.**
+  Enable ReplayMod's "auto start recording".
+* A replay that respawns into a dimension the client has never registered still skips that dimension
+  change (1.1 behaviour, unchanged).
+
+## Install
+
+1. Put `Replaymod-2.5.2-GTNH-release1.2.jar` into the GTNH instance `mods/`.
+2. Make sure these runtime dependencies are present: **UniMixins ≥ 0.1.7**, **GTNHLib ≥ 0.6.6**,
+   **LWJGL3ify ≥ 1.5.7**.
+3. Remove the original `replaymod-1.7.10-2.5.2.jar` (same modid — this jar replaces it).
+4. Restart. The "回放中心" entry appears on the main menu.
+5. Video export needs ffmpeg: drop `ffmpeg.exe` at `<GAMEDIR>\ffmpeg\bin\ffmpeg.exe` (or anywhere
+   under the game directory). Tested with **ffmpeg 9.1 full_build**.
+
+## Verifying your download
+
+```powershell
+Get-FileHash .\Replaymod-2.5.2-GTNH-release1.2.jar -Algorithm SHA256
+# expected: 81523FFD75334E2295CC67AC233EE06153D07BF56807BC9B2121730C2F1EBB41
+```
+
+The jar contains **6154** unique entries (6155 raw), 52 classes under `com/gtnh/replaycompat/**`
+(30 mixins). Upstream has 6101 unique (6102 raw): both numbers are +53.
+
+---
+
+# Release notes — release1.1 (previous)
 
 **Attach to this release:** `Replaymod-2.5.2-GTNH-release1.1.jar`
 (`10882998` bytes · `SHA256 E9AACAB9DF6859151A537CF7419C078314EB7B9419D8DD74F28412429F9EE1DB`)

@@ -8,6 +8,7 @@
   "client": [
     "MixinGuiCustomReplayEntry",
     "MixinEtFuturumPlayer",
+    "MixinJourneymapWorldName",
     "MixinNetHandlerPlayClientSpawnGuard",
     "MixinGuiScrollableWheelScale",
     "MixinGuiBackgroundProcessesMainMenu",
